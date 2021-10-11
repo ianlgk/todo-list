@@ -5,7 +5,7 @@
 ![GitHub starts](https://img.shields.io/github/stars/ianlgk/todo-list?label=Stars&style=plastic)
 ![GitHub forks](https://img.shields.io/github/forks/ianlgk/todo-list?label=Forks&style=plastic)
 
-<img src="https://github.com/ianlgk/ianlgk/blob/main/assets/ToDo-Gif.gif" alt="Home Page - ToDo List">
+<img src="https://github.com/ianlgk/ianlgk/blob/main/assets/ToDo-Gif.gif" alt="Home Page - ToDo List" align="center">
 
 > This is a ToDo List project using Vue.js and local storage to keep the tasks even if the user closes or refreshes the browser
 
