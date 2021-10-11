@@ -1,5 +1,8 @@
 <template>
   <div class="container">
+    <div id="input-warning">
+      Empty task field, we need it to create a new task 😢
+    </div>
     <div class="todo-container">
       <div class="header">
         <div class="img-container">
@@ -23,24 +26,28 @@
         </div>
       </div>
       <div class="list-container">
-        <ul class="task-list">
-          <li class="task">
-            <input id="checkbox-1" type="checkbox" />
-            <label for="checkbox-1">Task 1</labeL>
-            <Icon icon="bx:bx-trash" />
-          </li>
-          <li class="task">
-            <input id="checkbox-2" type="checkbox" />
-            <label for="checkbox-2">Task 2</labeL>
-          </li>
-          <li class="task">
-            <input id="checkbox-3" type="checkbox" />
-            <label for="checkbox-3">Task 3</labeL>
+        <ul class="task-list" v-if="isTaskListEmpty">
+          <li class="task" v-for="(task, index) in taskList" :key="index">
+            <input
+              :id="task.name"
+              type="checkbox"
+              @click="checkTask(task)"
+              v-bind:checked="task.checked ? 'checked' : null"
+            />
+            <label
+              :for="task.name"
+            >
+              {{ task.name }}
+            </label>
+            <Icon
+              icon="bx:bx-trash"
+              @click.native="removeTask(task)"
+            />
           </li>
         </ul>
       </div>
       <div class="task-counter-container">
-        3 items left.
+        {{ msg }}
       </div>
     </div>
     <div class="credits-container">
@@ -50,9 +57,10 @@
 </template>
 
 <script>
-import ImageResponsive from '../components/shared/ImageResponsive.vue'
+import ImageResponsive from '../components/ImageResponsive.vue'
 import VueJSLogoImg from '../assets/logo.png'
 import { Icon } from '@iconify/vue2'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Home',
@@ -63,18 +71,38 @@ export default {
   data() {
     return {
       logoImg: VueJSLogoImg,
-      taskArray: [],
-      task: '',
+      taskList: this.$store.state.taskList,
+      task: ''
     }
   },
   methods: {
     addTask() {
       if (this.task.length === 0) {
-        console.log('Task is empty!')
+        document.getElementById('input-warning').style.top = '2rem'
+        setTimeout(() => document.getElementById('input-warning').style.top = '10rem', 3000)
         return;
       }
-      console.log(this.task)
+      this.taskList.push({
+        name: this.task,
+        checked: false
+      })
+      this.$store.dispatch('updateTaskList', this.taskList)
+      this.task = ''
+    },
+    removeTask(task) {
+      this.taskList.splice(this.taskList.indexOf(task), 1)
+      this.$store.dispatch('updateTaskList', this.taskList)
+    },
+    checkTask(task) {
+      let id = this.taskList.indexOf(task)
+
+      this.taskList[id].checked = !this.taskList[id].checked
+
+      this.$store.dispatch('updateTaskList', this.taskList)
     }
+  },
+  computed: {
+    ...mapGetters(['isTaskListEmpty', 'msg'])
   }
 }
 </script>
@@ -107,17 +135,28 @@ body {
 
 .container {
   width: 80%;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+
+#input-warning {
+  position: absolute;
+  top: 10rem;
+  background-color: #ff4040;
+  color: #FFF;
+  padding: 1rem;
+  border-radius: 4px;
+  transition: all 0.2s;
 }
 
 .todo-container {
   background-color: #FFF;
-  height: calc(70vh - 2rem);
+  min-height: calc(70vh - 2rem);
   width: calc(100% - 10rem);
   max-width: calc(600px - 10rem);
   border-radius: 10px;
@@ -125,19 +164,8 @@ body {
   padding: 1rem 5rem;
   transition: all 0.2s;
   margin-bottom: 1rem;
-}
-
-@media screen and (max-width: 768px) {
-  .todo-container {
-    width: 100%;
-    padding: 1rem 1rem;
-  }
-}
-
-@media screen and (max-width: 420px) {
-  .todo-container {
-    height: calc(80vh - 2rem);
-  }
+  position: relative;
+  margin-top: 10px;
 }
 
 .header {
@@ -199,10 +227,10 @@ body {
 .list-container {
   width: calc(100% - 2rem);
   padding: 0rem 1rem;
-  margin-bottom: 1rem;
 }
 
 .task-list {
+  width: 100%;
   list-style: none;
 }
 
@@ -260,10 +288,27 @@ body {
   padding: 0.5rem 1rem;
   border-radius: 4px;
   font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 .credits-container {
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+@media screen and (max-width: 768px) {
+  .todo-container {
+    width: 100%;
+    padding: 1rem 1rem;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .todo-container {
+    min-height: calc(80vh - 2rem);
+  }
 }
 </style>

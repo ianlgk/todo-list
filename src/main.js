@@ -1,8 +1,10 @@
 import Vue from 'vue'
-import Home from '@/view/Home.vue'
+import ToDo from '@/view/ToDo.vue'
+import store from '@/store'
 
 Vue.config.productionTip = false
 
 new Vue({
-  render: h => h(Home),
+  store,
+  render: h => h(ToDo),
 }).$mount('#app')
